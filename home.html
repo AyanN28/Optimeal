@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OptiMeal | Smart food choices, guided by your health</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #10b981;
+            --secondary: #14b8a6;
+            --bg-start: #edfdf4;
+            --bg-end: #d1fae5;
+            --text-dark: #1f2937;
+            --text-light: #4b5563;
+            --white: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 { color: var(--text-dark); font-weight: 600; }
+        h1 { font-size: 2.5rem; letter-spacing: -0.05em; }
+        h2 { font-size: 1.5rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        p { color: var(--text-light); }
+
+        /* Glassmorphism utility */
+        .glass {
+            background: var(--white);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow);
+            padding: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .glass:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.1);
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            flex: 1;
+        }
+        @media (max-width: 968px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 3rem 1rem 1rem;
+            position: relative;
+        }
+        .logo-icon {
+            display: inline-block;
+            font-size: 3rem;
+            animation: float 3s ease-in-out infinite;
+            margin-bottom: 0.5rem;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+        input[type="text"], input[type="number"], select, textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 0.5rem;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 400;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .checkbox-label input {
+            accent-color: var(--primary);
+            width: 1.1rem;
+            height: 1.1rem;
+        }
+
+        /* Buttons */
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 0.875rem 1.5rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .btn:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        .btn-outline:hover {
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        /* Columns and Cards */
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .card-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        @media (max-width: 600px) {
+            .card-row { grid-template-columns: 1fr; }
+        }
+
+        /* Response Panel */
+        .response-panel {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            padding: 1rem;
+            min-height: 100px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--glass-border);
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            display: none;
+        }
+        .response-panel.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        .typewriter-text {
+            border-right: 2px solid var(--primary);
+            animation: blink 0.75s step-end infinite;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes blink {
+            from, to { border-color: transparent }
+            50% { border-color: var(--primary); }
+        }
+
+        /* API Warning Banner */
+        #api-warning {
+            background: var(--warning);
+            color: white;
+            padding: 0.75rem;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        /* Loading Spinner */
+        .loader {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 3px solid white;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-top: auto;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--primary);
+            margin-top: 0.5rem;
+        }
+
+        .file-upload-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        .file-upload-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .safety-card {
+            background: rgba(239, 68, 68, 0.05);
+            border-left: 4px solid var(--danger);
+        }
+
+        .context-card {
+            background: linear-gradient(135deg, rgba(20, 184, 166, 0.1), rgba(16, 185, 129, 0.1));
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="api-warning">
+        ⚠️ API keys not configured. Running in local demo mode.
+    </div>
+
+    <header>
+        <div class="logo-icon">🥑</div>
+        <h1>OptiMeal</h1>
+        <p>Smart food choices, guided by your health.</p>
+    </header>
+
+    <div class="container">
+
+        <!-- LEFT COLUMN -->
+        <div class="left-column">
+
+            <!-- Health DNA Profile -->
+            <div class="glass">
+                <h2>🧬 Health DNA</h2>
+                <form id="health-profile-form">
+                    <div class="card-row">
+                        <div class="form-group">
+                            <label>Age</label>
+                            <input type="number" id="age" min="1" max="120" placeholder="e.g. 30">
+                        </div>
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <select id="gender">
+                                <option value="">Select</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-row">
+                        <div class="form-group">
+                            <label>Weight (kg)</label>
+                            <input type="number" id="weight" placeholder="e.g. 70">
+                        </div>
+                        <div class="form-group">
+                            <label>Height (cm)</label>
+                            <input type="number" id="height" placeholder="e.g. 175">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Activity Level</label>
+                        <select id="activity">
+                            <option value="sedentary">Sedentary</option>
+                            <option value="light">Lightly Active</option>
+                            <option value="moderate">Moderately Active</option>
+                            <option value="active">Very Active</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Health Goal</label>
+                        <select id="goal">
+                            <option value="weight_loss">Weight loss</option>
+                            <option value="muscle_gain">Muscle gain</option>
+                            <option value="energy">More energy</option>
+                            <option value="diabetes">Diabetes management</option>
+                            <option value="heart">Heart health</option>
+                            <option value="wellness">Overall wellness</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Dietary Preference</label>
+                        <select id="diet">
+                            <option value="omnivore">Omnivore</option>
+                            <option value="vegetarian">Vegetarian</option>
+                            <option value="vegan">Vegan</option>
+                            <option value="keto">Keto-friendly</option>
+                            <option value="gluten_free">Gluten-free</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Allergies</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="allergy" value="nuts"> Nuts</label>
+                            <label class="checkbox-label"><input type="checkbox" name="allergy" value="dairy"> Dairy</label>
+                            <label class="checkbox-label"><input type="checkbox" name="allergy" value="gluten"> Gluten</label>
+                            <label class="checkbox-label"><input type="checkbox" name="allergy" value="eggs"> Eggs</label>
+                            <label class="checkbox-label"><input type="checkbox" name="allergy" value="shellfish"> Shellfish</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Health Conditions</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="condition" value="diabetes"> Diabetes</label>
+                            <label class="checkbox-label"><input type="checkbox" name="condition" value="hypertension"> Hypertension</label>
+                            <label class="checkbox-label"><input type="checkbox" name="condition" value="cholesterol"> High cholesterol</label>
+                            <label class="checkbox-label"><input type="checkbox" name="condition" value="ibs"> IBS</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Smart AI Plan Button -->
+            <div class="glass" style="text-align: center;">
+                <button class="btn" id="generate-plan-btn" aria-label="Generate smart meal plan">
+                    ✨ Get Smart Plan
+                    <div class="loader" id="plan-loader"></div>
+                </button>
+                <div class="response-panel" id="plan-response"></div>
+            </div>
+
+            <!-- Safety Engine -->
+            <div class="glass safety-card">
+                <h2>🛡️ Safety First</h2>
+                <p style="font-size: 0.85rem;">Your data stays on your device.</p>
+                <p style="font-size: 0.85rem;">Consult a healthcare professional before major dietary changes. We do not provide medical advice. OptiMeal avoids identified allergens and respects indicated medical conditions, but always double-check ingredients.</p>
+            </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="right-column">
+
+            <!-- Card D: Smart Context Engine -->
+            <div class="glass context-card">
+                <h2>🌤️ Smart Context</h2>
+                <p id="context-msg">Loading local context...</p>
+            </div>
+
+            <!-- Card A: Visual Nutrition Audit & Card F: Grocery Smart Shopping -->
+            <div class="glass">
+                <h2>📸 Visual Nutrition Audit</h2>
+                <p style="font-size: 0.9rem; margin-bottom: 1rem;">Upload a menu, meal, or grocery label for instant AI health scoring and alternatives.</p>
+                <div class="file-upload-wrapper">
+                    <button class="btn btn-outline" style="width: 100%;">
+                        <span>Upload Image to Analyze</span>
+                    </button>
+                    <input type="file" id="vision-upload" accept="image/*" aria-label="Upload food image">
+                </div>
+                <div class="response-panel" id="vision-response" style="text-align: center;"></div>
+            </div>
+
+            <!-- Card B: Ask AI Assistant -->
+            <div class="glass">
+                <h2>💬 Ask AI Assistant</h2>
+                <div class="form-group">
+                    <textarea id="ai-chat-input" rows="3" placeholder="e.g. What's a diabetic-friendly breakfast that is quick to make?"></textarea>
+                </div>
+                <button class="btn btn-outline" id="ask-ai-btn">
+                    🤖 Ask OptiMeal
+                    <div class="loader" id="chat-loader" style="border-top-color: var(--primary);"></div>
+                </button>
+                <div class="response-panel" id="chat-response"></div>
+            </div>
+
+            <div class="card-row">
+                <!-- Card C: Hyper-local Healthy Food Finder -->
+                <div class="glass">
+                    <h2>🌍 Nearby Eats</h2>
+                    <p style="font-size: 0.85rem; margin-bottom: 1rem;">Find healthy restaurants near you matching your diet.</p>
+                    <button class="btn btn-outline" id="find-food-btn">
+                        Find Places
+                        <div class="loader" id="places-loader" style="border-top-color: var(--primary);"></div>
+                    </button>
+                    <div class="response-panel" id="places-response"></div>
+                </div>
+
+                <!-- Card E: Calendar Sync -->
+                <div class="glass">
+                    <h2>📅 Schedule Sync</h2>
+                    <p style="font-size: 0.85rem; margin-bottom: 1rem;">Match meal complexity to your busy schedule.</p>
+                    <button class="btn btn-outline" id="sync-calendar-btn">
+                        Sync Calendar
+                        <div class="loader" id="calendar-loader" style="border-top-color: var(--primary);"></div>
+                    </button>
+                    <div class="response-panel" id="calendar-response"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer>
+        OptiMeal &copy; 2026<br>
+        Smart food choices, guided by your health.<br>
+        <small style="opacity: 0.7;">Privacy: All profile data is stored locally via localStorage.</small>
+    </footer>
+
+    <script>
+        // --- API PLACEHOLDERS ---
+        // Change these from 'PLACEHOLDER' to actual keys for real functionality
+        const KEYS = {
+            GEMINI: 'PLACEHOLDER',
+            PLACES: 'PLACEHOLDER',
+            WEATHER: 'PLACEHOLDER',
+            CALENDAR: 'PLACEHOLDER'
+        };
+
+        // Check if using placeholders to show warning
+        const isDemoMode = Object.values(KEYS).some(k => k === 'PLACEHOLDER');
+        if (isDemoMode) {
+            document.getElementById('api-warning').style.display = 'block';
+        }
+
+        // --- LOCAL STORAGE MANAGER ---
+        const StorageManager = {
+            saveProfile() {
+                const profile = {
+                    age: document.getElementById('age').value,
+                    gender: document.getElementById('gender').value,
+                    weight: document.getElementById('weight').value,
+                    height: document.getElementById('height').value,
+                    activity: document.getElementById('activity').value,
+                    goal: document.getElementById('goal').value,
+                    diet: document.getElementById('diet').value,
+                    allergies: Array.from(document.querySelectorAll('input[name="allergy"]:checked')).map(cb => cb.value),
+                    conditions: Array.from(document.querySelectorAll('input[name="condition"]:checked')).map(cb => cb.value)
+                };
+                localStorage.setItem('optimeal_profile', JSON.stringify(profile));
+                return profile;
+            },
+            loadProfile() {
+                const saved = localStorage.getItem('optimeal_profile');
+                if (saved) {
+                    const profile = JSON.parse(saved);
+                    document.getElementById('age').value = profile.age || '';
+                    document.getElementById('gender').value = profile.gender || '';
+                    document.getElementById('weight').value = profile.weight || '';
+                    document.getElementById('height').value = profile.height || '';
+                    document.getElementById('activity').value = profile.activity || 'sedentary';
+                    document.getElementById('goal').value = profile.goal || 'wellness';
+                    document.getElementById('diet').value = profile.diet || 'omnivore';
+
+                    profile.allergies?.forEach(val => {
+                        const cb = document.querySelector(`input[name="allergy"][value="${val}"]`);
+                        if (cb) cb.checked = true;
+                    });
+                    profile.conditions?.forEach(val => {
+                        const cb = document.querySelector(`input[name="condition"][value="${val}"]`);
+                        if (cb) cb.checked = true;
+                    });
+                }
+            }
+        };
+
+        // --- UTILS ---
+        const typeWriter = (element, text, speed = 10) => {
+            element.innerHTML = '';
+            element.classList.add('active');
+            let i = 0;
+            const targetHtml = text.replace(/\n/g, '<br>');
+
+            // For simple text typing effect (mock mode)
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML = text.substring(0, i+1).replace(/\n/g, '<br>') + '<span class="typewriter-text"></span>';
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    element.innerHTML = targetHtml; // remove cursor
+                }
+            }
+            type();
+        };
+
+        // Save profile on any input change
+        document.getElementById('health-profile-form').addEventListener('input', StorageManager.saveProfile);
+
+        // --- FEATURES ---
+
+        // 1. Context Engine (Card D)
+        function updateContext() {
+            const hour = new Date().getHours();
+            let msg = "";
+            if (hour >= 5 && hour < 11) msg = "Morning! Start your day with protein and fiber for sustained energy.";
+            else if (hour >= 11 && hour < 15) msg = "Lunch time! A balanced meal will prevent the afternoon slump.";
+            else if (hour >= 15 && hour < 18) msg = "Afternoon! Stay hydrated. A light snack can bridge the gap to dinner.";
+            else if (hour >= 18 && hour < 22) msg = "Evening! Choose a lighter dinner to support restorative sleep.";
+            else msg = "Late night! If hungry, opt for a small, easily digestible snack.";
+
+            document.getElementById('context-msg').innerText = msg;
+        }
+
+        // 2. Smart AI Plan
+        document.getElementById('generate-plan-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('generate-plan-btn');
+            const loader = document.getElementById('plan-loader');
+            const responsePanel = document.getElementById('plan-response');
+
+            const profile = StorageManager.saveProfile();
+
+            btn.disabled = true;
+            loader.style.display = 'block';
+            responsePanel.classList.remove('active');
+
+            // Simulate API call
+            setTimeout(() => {
+                const dietText = profile.diet !== 'omnivore' ? `${profile.diet} ` : '';
+                const allergenAlert = profile.allergies.length ? `[No ${profile.allergies.join(', ')}] ` : '';
+
+                const mockPlan = `Based on your profile, here is your ${allergenAlert}safe ${dietText}meal plan for ${profile.goal.replace('_', ' ')}:\n\n` +
+                `🍳 Breakfast: Oatmeal with berries and a side of scrambled egg whites.\n\n` +
+                `🥗 Lunch: Quinoa salad with grilled tofu/chicken, leafy greens, and olive oil dressing.\n\n` +
+                `🍎 Snack: Greek yogurt or a handful of seeds.\n\n` +
+                `🍽️ Dinner: Steamed broccoli, sweet potato, and baked salmon/tempeh.\n\n` +
+                `💧 Hydration: Aim for at least 2.5L of water today.\n\n` +
+                `⚡ Lifestyle: Include a 30-minute brisk walk.`;
+
+                loader.style.display = 'none';
+                btn.disabled = false;
+                typeWriter(responsePanel, mockPlan, 15);
+            }, 1500);
+        });
+
+        // 3. Ask AI Assistant
+        document.getElementById('ask-ai-btn').addEventListener('click', () => {
+            const input = document.getElementById('ai-chat-input').value;
+            if (!input.trim()) return;
+
+            const btn = document.getElementById('ask-ai-btn');
+            const loader = document.getElementById('chat-loader');
+            const responsePanel = document.getElementById('chat-response');
+
+            btn.disabled = true;
+            loader.style.display = 'inline-block';
+
+            setTimeout(() => {
+                const mockResponse = `🤖 As your medical-aware nutrition guide: For that request, I recommend focusing on whole foods with a low glycemic index. Always ensure it aligns with your specific health conditions.`;
+                loader.style.display = 'none';
+                btn.disabled = false;
+                typeWriter(responsePanel, mockResponse, 20);
+                document.getElementById('ai-chat-input').value = '';
+            }, 1000);
+        });
+
+        // 4. Visual Nutrition Audit
+        document.getElementById('vision-upload').addEventListener('change', (e) => {
+            if (!e.target.files.length) return;
+
+            const file = e.target.files[0];
+            const responsePanel = document.getElementById('vision-response');
+            responsePanel.classList.add('active');
+            responsePanel.innerHTML = '<div class="loader" style="display:inline-block; border-top-color: var(--primary);"></div> Analyzing image...';
+
+            setTimeout(() => {
+                const score = Math.floor(Math.random() * 40) + 50; // Random score 50-90
+                responsePanel.innerHTML = `
+                    <div style="font-size: 3rem; font-weight: bold; color: ${score > 75 ? 'var(--primary)' : 'var(--warning)'}">${score}/100</div>
+                    <div class="badge">Health Score</div>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; text-align: left;">
+                        <strong>Analysis:</strong> Contains moderate sodium. Good source of protein.<br>
+                        <strong>Alternative:</strong> Choose the grilled option instead of fried to save 200 calories and reduce unhealthy fats.
+                    </p>
+                `;
+            }, 2000);
+        });
+
+        // 5. Hyper-local Places
+        document.getElementById('find-food-btn').addEventListener('click', () => {
+            const btn = document.getElementById('find-food-btn');
+            const loader = document.getElementById('places-loader');
+            const responsePanel = document.getElementById('places-response');
+
+            btn.disabled = true;
+            loader.style.display = 'inline-block';
+
+            if ("geolocation" in navigator) {
+                // Mocking geolocation success for demo speed
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    btn.disabled = false;
+                    responsePanel.classList.add('active');
+                    responsePanel.innerHTML = `
+                        <strong>📍 Found nearby:</strong><br><br>
+                        1. <strong>Green Bowl Cafe</strong> (4.8 ⭐)<br>
+                        <small>1.2 km away • <span style="color:var(--primary)">Matches your diet</span></small><br><br>
+                        2. <strong>The Clean Plate</strong> (4.5 ⭐)<br>
+                        <small>2.0 km away • <span style="color:var(--primary)">Healthy options</span></small>
+                    `;
+                }, 1500);
+            } else {
+                loader.style.display = 'none';
+                btn.disabled = false;
+                responsePanel.classList.add('active');
+                responsePanel.innerHTML = 'Geolocation is not supported by your browser.';
+            }
+        });
+
+        // 6. Calendar Sync
+        document.getElementById('sync-calendar-btn').addEventListener('click', () => {
+            const btn = document.getElementById('sync-calendar-btn');
+            const loader = document.getElementById('calendar-loader');
+            const responsePanel = document.getElementById('calendar-response');
+
+            btn.disabled = true;
+            loader.style.display = 'inline-block';
+
+            setTimeout(() => {
+                loader.style.display = 'none';
+                btn.disabled = false;
+                responsePanel.classList.add('active');
+                responsePanel.innerHTML = `
+                    <strong>📅 Today's Schedule:</strong><br>
+                    Busy from 12 PM - 3 PM.<br><br>
+                    <strong>💡 Suggestion:</strong> Prepare a quick 5-minute wrap for lunch before your meetings start. Plan a full, relaxed meal for dinner.
+                `;
+            }, 1200);
+        });
+
+        // Init
+        window.addEventListener('DOMContentLoaded', () => {
+            StorageManager.loadProfile();
+            updateContext();
+        });
+
+    </script>
+</body>
+</html>
